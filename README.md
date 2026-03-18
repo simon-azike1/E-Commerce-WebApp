@@ -172,4 +172,7 @@ The frontend runs on `http://localhost:5173` and the backend on `http://localhos
 
 ## License
 
-ISC
+MIT
+
+<img width="1871" height="882" alt="image" src="https://github.com/user-attachments/assets/1435bcc1-5334-45b3-b99c-c330511f4c27" />
+
