@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { 
+    scroll-behavior: smooth; 
+  }
+  :root {
+    --color-text: #1E1A16;
+    --color-text-muted: #6B6560;
+    --color-border: #E5E0DB;
+    --color-bg: #FAF7F2;
+    --color-primary: #C4602A;
+    --color-surface: #FFFFFF;
+    --color-surface-secondary: #F9FAFB;
+  }
+  html.dark {
+    --color-text: #FAF7F2;
+    --color-text-muted: #9CA3AF;
+    --color-border: #374151;
+    --color-bg: #111827;
+    --color-primary: #E8845A;
+    --color-surface: #1F2937;
+    --color-surface-secondary: #111827;
+  }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    line-height: 1.2;
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: 'Playfair Display', Georgia, serif; }
+}
