@@ -98,8 +98,8 @@ export default function Cart() {
     );
   }
 
-  return (
-    <div className="min-h-screen py-12 pb-24 bg-gradient-to-b from-cream to-white">
+return (
+     <div className="min-h-screen py-12 pb-24 bg-gradient-to-b from-cream to-white overflow-x-hidden">
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -225,13 +225,13 @@ export default function Cart() {
             </AnimatePresence>
           </div>
 
-          {/* Order Summary */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white border border-cream-dark rounded-2xl p-6 lg:sticky lg:top-24 shadow-xl shadow-cream-dark/10"
-          >
+           {/* Order Summary */}
+           <motion.div
+             initial={{ opacity: 0, x: 30 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ duration: 0.5, delay: 0.2 }}
+             className="bg-white border border-cream-dark rounded-2xl p-6 lg:sticky lg:top-24 shadow-xl shadow-cream-dark/10 overflow-x-hidden max-w-xs"
+           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-terra/10 flex items-center justify-center">
                 <Package size={20} className="text-terra" />
@@ -271,18 +271,18 @@ export default function Cart() {
               </div>
             </div>
 
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Link
-                to="/checkout"
-                className="flex items-center justify-center gap-3 bg-terra hover:bg-terra-dark text-white font-semibold py-4 rounded-xl transition-all duration-300 shadow-lg shadow-terra/25 hover:shadow-terra/40 w-full"
-              >
-                Proceed to Checkout
-                <ArrowRight size={18} />
-              </Link>
-            </motion.div>
+             <motion.div
+               whileHover={{ scale: 1.02 }}
+               whileTap={{ scale: 0.98 }}
+             >
+               <Link
+                 to="/checkout"
+                 className="flex items-center justify-center gap-3 bg-terra hover:bg-terra-dark text-white font-semibold text-base md:text-lg px-4 md:px-6 py-4 rounded-xl transition-all duration-300 shadow-lg shadow-terra/25 hover:shadow-terra/40 w-full"
+               >
+                 Proceed to Checkout
+                 <ArrowRight size={18} />
+               </Link>
+             </motion.div>
 
             <Link
               to="/shop"
