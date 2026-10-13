@@ -4,6 +4,8 @@ import { ShoppingBag, ChevronLeft, Plus, Minus, Star, Truck, Shield, RotateCcw, 
 import { motion, AnimatePresence } from 'framer-motion';
 import { getProduct } from '../api';
 import { useCart } from '../context/CartContext';
+import { getCurrencySymbol } from '../utils/currency';
+import ImageLightbox, { ZoomButton } from '../components/ui/ImageLightbox';
 import toast from 'react-hot-toast';
 
 const PLACEHOLDER = 'https://placehold.co/600x600/F0EBE1/AEA9A3?text=No+Image';
@@ -18,6 +20,7 @@ export default function ProductDetailPage() {
   const [qty, setQty] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const cartItem = cart.find((i) => i._id === id);
 
@@ -183,7 +186,10 @@ export default function ProductDetailPage() {
             className="lg:sticky lg:top-24"
           >
             {/* Main Image */}
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 shadow-xl">
+            <div
+              className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100 mb-4 shadow-xl cursor-zoom-in"
+              onClick={() => setLightboxOpen(true)}
+            >
               <AnimatePresence mode="wait">
                 <motion.img
                   key={activeImg}
@@ -197,6 +203,11 @@ export default function ProductDetailPage() {
                   onLoad={() => setImageLoaded(true)}
                 />
               </AnimatePresence>
+
+              {/* Zoom hint */}
+              <div className="absolute bottom-4 right-4">
+                <ZoomButton onClick={() => setLightboxOpen(true)} />
+              </div>
               
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -235,7 +246,7 @@ export default function ProductDetailPage() {
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={handleWishlist}
+                  onClick={(e) => { e.stopPropagation(); handleWishlist(); }}
                   className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                     isWishlisted 
                       ? 'bg-red-500 text-white' 
@@ -247,7 +258,7 @@ export default function ProductDetailPage() {
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={handleShare}
+                  onClick={(e) => { e.stopPropagation(); handleShare(); }}
                   className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm text-gray-700 hover:text-terra flex items-center justify-center transition-all duration-300"
                 >
                   <Share2 size={18} />
@@ -268,10 +279,10 @@ export default function ProductDetailPage() {
                     key={i}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setActiveImg(i)}
+                    onClick={() => { setActiveImg(i); setLightboxOpen(true); }}
                     className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
-                      i === activeImg 
-                        ? 'border-terra shadow-lg shadow-terra/30' 
+                      i === activeImg
+                        ? 'border-terra shadow-lg shadow-terra/30'
                         : 'border-transparent hover:border-gray-300'
                     }`}
                   >
@@ -336,12 +347,12 @@ export default function ProductDetailPage() {
             {/* Price */}
             <motion.div variants={itemVariants} className="flex items-center gap-4 flex-wrap">
               <span className="text-3xl md:text-4xl font-bold text-terra">
-                ₦{product.price.toLocaleString()}
+                {getCurrencySymbol(product.currency || 'NGN')}{product.price.toLocaleString()}
               </span>
               {hasDiscount && (
                 <>
                   <span className="text-lg text-stone-light line-through">
-                    ₦{product.comparePrice.toLocaleString()}
+                    {getCurrencySymbol(product.currency || 'NGN')}{product.comparePrice.toLocaleString()}
                   </span>
                   <motion.span
                     initial={{ scale: 0 }}
@@ -499,6 +510,15 @@ export default function ProductDetailPage() {
             </motion.div>
           </motion.div>
         </div>
+
+        {/* Full-screen image viewer */}
+        {lightboxOpen && (
+          <ImageLightbox
+            images={images}
+            index={activeImg}
+            onClose={() => setLightboxOpen(false)}
+          />
+        )}
       </div>
     </div>
   );

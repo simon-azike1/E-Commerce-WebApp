@@ -42,12 +42,17 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    isFeatured: {
-      type: Boolean,
-      default: false,
-    },
-    tags: [String],
-    // Payment gateway ready field (used in Phase 3)
+     isFeatured: {
+       type: Boolean,
+       default: false,
+     },
+     tags: [String],
+     currency: {
+       type: String,
+       default: 'NGN',
+       enum: ['NGN', 'MAD', 'USD', 'EUR', 'GBP']
+     },
+     // Payment gateway ready field (used in Phase 3)
     stripeProductId: {
       type: String,
       select: false,

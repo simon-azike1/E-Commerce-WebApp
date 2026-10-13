@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft, MapPin, Store, MessageCircle, User, Phone, Mail, Package, Truck, CreditCard, Shield, CheckCircle, AlertCircle } from 'lucide-react';
+import { ChevronLeft, MapPin, Store, MessageCircle, User, Phone, Mail, Package, Truck, CreditCard, Shield, CheckCircle, AlertCircle, ZoomIn } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { placeOrder } from '../api';
 import { useCart } from '../context/CartContext';
+import { getCurrencySymbol, getDominantCurrency } from '../utils/currency';
+import ImageLightbox from '../components/ui/ImageLightbox';
 import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart, totalPrice, clearCart } = useCart();
+  const [lightbox, setLightbox] = useState(null);
+
+  const cartCurrency = getDominantCurrency(cart);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -101,6 +106,7 @@ export default function CheckoutPage() {
         state: {
           orderNumber: data.order.orderNumber,
           total: data.order.total,
+          currency: data.order.currency || cartCurrency,
           waLink: data.waLink,
           fulfillmentType: data.order.fulfillmentType,
         },
@@ -491,21 +497,37 @@ export default function CheckoutPage() {
             </div>
 
             {/* Cart Items */}
-            <div className="flex flex-col gap-3 mb-6 max-h-64 overflow-y-auto pr-2">
+            <div className="flex flex-col gap-4 mb-6 max-h-80 overflow-y-auto pr-2">
               {cart.map((item, index) => (
                 <motion.div
                   key={item._id}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex justify-between items-center gap-3 py-2 border-b border-cream-dark/50 last:border-0"
+                  className="flex items-center gap-3 py-2 border-b border-cream-dark/50 last:border-0"
                 >
+                  <button
+                    type="button"
+                    onClick={() => setLightbox({ images: item.images?.length ? item.images.map((i) => i.url) : [], index: 0 })}
+                    className="group/img relative flex-shrink-0 rounded-xl overflow-hidden"
+                    aria-label={`View ${item.name} image`}
+                  >
+                    <img
+                      src={item.images?.[0]?.url}
+                      alt={item.name}
+                      className="w-16 h-16 rounded-xl object-cover bg-cream-dark"
+                    />
+                    <span className="absolute inset-0 bg-charcoal/0 group-hover/img:bg-charcoal/10 transition-colors pointer-events-none" />
+                    <span className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-white/90 backdrop-blur-sm text-charcoal flex items-center justify-center shadow pointer-events-none">
+                      <ZoomIn size={11} />
+                    </span>
+                  </button>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-charcoal line-clamp-1">{item.name}</p>
+                    <p className="text-sm font-medium text-charcoal line-clamp-2">{item.name}</p>
                     <p className="text-xs text-stone">Qty: {item.quantity}</p>
                   </div>
                   <span className="text-sm font-semibold text-charcoal flex-shrink-0">
-                    ₦{(item.price * item.quantity).toLocaleString()}
+                    {getCurrencySymbol(item.currency || 'NGN')}{(item.price * item.quantity).toLocaleString()}
                   </span>
                 </motion.div>
               ))}
@@ -515,7 +537,7 @@ export default function CheckoutPage() {
             <div className="bg-cream/50 rounded-xl p-4 mb-6">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-stone text-sm">Subtotal</span>
-                <span className="text-charcoal font-medium">₦{totalPrice.toLocaleString()}</span>
+                <span className="text-charcoal font-medium">{getCurrencySymbol(cartCurrency)}{totalPrice.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-stone text-sm">Delivery</span>
@@ -524,7 +546,7 @@ export default function CheckoutPage() {
               <hr className="border-cream-dark my-3" />
               <div className="flex justify-between items-center">
                 <span className="text-charcoal font-semibold">Total</span>
-                <span className="text-xl font-bold text-terra">₦{totalPrice.toLocaleString()}</span>
+                <span className="text-xl font-bold text-terra">{getCurrencySymbol(cartCurrency)}{totalPrice.toLocaleString()}</span>
               </div>
             </div>
 
@@ -581,6 +603,15 @@ export default function CheckoutPage() {
             </div>
           </motion.div>
         </form>
+
+        {/* Full-screen image viewer */}
+        {lightbox && (
+          <ImageLightbox
+            images={lightbox.images}
+            index={lightbox.index}
+            onClose={() => setLightbox(null)}
+          />
+        )}
       </div>
     </div>
   );

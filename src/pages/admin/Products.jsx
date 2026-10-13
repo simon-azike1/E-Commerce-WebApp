@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, Package, Search } from 'lucide-react';
 import { getAdminProducts, deleteProduct } from '../../api/index';
 import { Spinner, EmptyState, ConfirmModal } from '../../components/ui/AdminUI';
+import { getCurrencySymbol } from '../../utils/currency';
 import toast from 'react-hot-toast';
 
 const PLACEHOLDER = 'https://placehold.co/60x60/F0EBE1/C4602A?text=?';
@@ -128,9 +129,13 @@ export default function Products() {
                       </td>
                       <td className="px-4 py-3 text-text-muted whitespace-nowrap">{product.category?.name || '—'}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="font-medium text-text">₦{product.price?.toLocaleString()}</span>
+                        <span className="font-medium text-text">
+                          {getCurrencySymbol(product.currency || 'NGN')}{product.price?.toLocaleString()}
+                        </span>
                         {product.comparePrice > product.price && (
-                          <span className="text-text-muted line-through text-xs ml-1">₦{product.comparePrice?.toLocaleString()}</span>
+                          <span className="text-text-muted line-through text-xs ml-1">
+                            {getCurrencySymbol(product.currency || 'NGN')}{product.comparePrice?.toLocaleString()}
+                          </span>
                         )}
                       </td>
                       <td className="px-4 py-3">

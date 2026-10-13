@@ -2,6 +2,8 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Category = require('./models/Category');
 const Product  = require('./models/Product');
+const User     = require('./models/User');
+const bcrypt   = require('bcryptjs');
 
 const categories = [
   { name: 'Electronics',     slug: 'electronics',   description: 'Gadgets and electronic devices',   isActive: true },
@@ -9,6 +11,21 @@ const categories = [
   { name: 'Home & Kitchen',  slug: 'home-kitchen',  description: 'Home and kitchen essentials',      isActive: true },
   { name: 'Health & Beauty', slug: 'health-beauty', description: 'Health, beauty and personal care', isActive: true },
 ];
+
+// Admin user data
+const adminUser = {
+  name: 'Admin User',
+  email: 'admin@ecommerce.com',
+  password: 'Admin@123', // Will be hashed by pre-save hook
+  role: 'admin',
+  phone: '+1234567890',
+  address: {
+    street: '123 Admin Street',
+    city: 'Admin City',
+    state: 'AS'
+  },
+  isActive: true
+};
 
 const getProducts = (catMap) => [
 
@@ -367,7 +384,12 @@ const seed = async () => {
 
     await Category.deleteMany({});
     await Product.deleteMany({});
+    await User.deleteMany({}); // Clear existing users
     console.log('🗑️   Cleared existing data');
+
+    // Create admin user
+    const admin = await User.create(adminUser);
+    console.log('👤  Admin user created:', admin.email);
 
     const insertedCategories = await Category.insertMany(categories);
     console.log(`📦  Inserted ${insertedCategories.length} categories`);

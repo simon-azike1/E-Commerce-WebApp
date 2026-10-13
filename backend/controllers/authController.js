@@ -20,7 +20,9 @@ const register = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Name, email and password are required' });
   }
 
-  const existing = await User.findOne({ email });
+  // Normalize email for lookup: trim and convert to lowercase
+  const normalizedEmail = email.trim().toLowerCase();
+  const existing = await User.findOne({ email: normalizedEmail });
   if (existing) {
     return res.status(409).json({ success: false, message: 'Email already registered' });
   }
@@ -48,7 +50,9 @@ const login = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Email and password are required' });
   }
 
-  const user = await User.findOne({ email }).select('+password');
+  // Normalize email for lookup: trim and convert to lowercase
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = await User.findOne({ email: normalizedEmail }).select('+password');
   if (!user) {
     return res.status(401).json({ success: false, message: 'Invalid credentials' });
   }
@@ -68,12 +72,12 @@ const login = asyncHandler(async (req, res) => {
   // Use updateOne instead of save to avoid triggering pre-save hook
   await User.updateOne({ _id: user._id }, { refreshToken });
 
-  res.json({
-    success: true,
-    accessToken,
-    refreshToken,
-    user: { _id: user._id, name: user.name, email: user.email, role: user.role },
-  });
+   res.json({
+     success: true,
+     accessToken,
+     refreshToken,
+     user: { _id: user._id.toString(), name: user.name, email: user.email, role: user.role },
+   });
 });
 
 // @route   POST /api/auth/refresh

@@ -408,8 +408,8 @@ export default function ShopPage() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className={viewMode === 'grid' 
-            ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5' 
+          className={viewMode === 'grid'
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5 md:gap-6'
             : 'flex flex-col gap-4'
           }
         >

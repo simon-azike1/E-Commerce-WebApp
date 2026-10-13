@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { getAdminOrder, updateOrderStatus } from '../../api/index';
 import { StatusBadge, Spinner } from '../../components/ui/AdminUI';
+import { getCurrencySymbol } from '../../utils/currency';
 import toast from 'react-hot-toast';
 
 const STATUSES    = ['pending', 'confirmed', 'processing', 'dispatched', 'delivered', 'cancelled'];
@@ -43,13 +44,14 @@ export default function OrderDetail() {
 
   const buildWaLink = (order) => {
     const number = import.meta.env.VITE_STORE_WHATSAPP || '';
-    const items  = order.items.map((i) => `• ${i.name} x${i.quantity} — ₦${i.price?.toLocaleString()}`).join('\n');
+    const sym    = getCurrencySymbol(order.currency || 'NGN');
+    const items  = order.items.map((i) => `• ${i.name} x${i.quantity} — ${sym}${i.price?.toLocaleString()}`).join('\n');
     const msg    =
       `📦 Order ${order.orderNumber}\n` +
       `Customer: ${order.customer?.name}\n` +
       `Phone: ${order.customer?.phone}\n\n` +
       `Items:\n${items}\n\n` +
-      `Total: ₦${order.total?.toLocaleString()}\n` +
+      `Total: ${sym}${order.total?.toLocaleString()}\n` +
       `Status: ${order.status}`;
     return `https://wa.me/${number}?text=${encodeURIComponent(msg)}`;
   };
@@ -102,18 +104,18 @@ export default function OrderDetail() {
                     <p className="text-text-muted text-xs mt-0.5">Qty: {item.quantity}</p>
                   </div>
                   <p className="font-semibold text-text text-sm whitespace-nowrap">
-                    ₦{(item.price * item.quantity).toLocaleString()}
+                    {getCurrencySymbol(order.currency || 'NGN')}{(item.price * item.quantity).toLocaleString()}
                   </p>
                 </motion.div>
               ))}
             </div>
             <div className="px-5 py-3 border-t border-border bg-surface-secondary flex justify-between">
               <span className="text-sm text-text-muted">Subtotal</span>
-              <span className="font-medium text-sm text-text">₦{order.subtotal?.toLocaleString()}</span>
+              <span className="font-medium text-sm text-text">{getCurrencySymbol(order.currency || 'NGN')}{order.subtotal?.toLocaleString()}</span>
             </div>
             <div className="px-5 py-3 border-t border-border flex justify-between">
               <span className="font-semibold text-text">Total</span>
-              <span className="font-bold text-text">₦{order.total?.toLocaleString()}</span>
+              <span className="font-bold text-text">{getCurrencySymbol(order.currency || 'NGN')}{order.total?.toLocaleString()}</span>
             </div>
           </motion.div>
 
@@ -210,7 +212,7 @@ export default function OrderDetail() {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-text-muted">Amount</span>
-              <span className="font-semibold text-text">₦{order.total?.toLocaleString()}</span>
+              <span className="font-semibold text-text">{getCurrencySymbol(order.currency || 'NGN')}{order.total?.toLocaleString()}</span>
             </div>
           </motion.div>
         </div>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, ArrowRight, Filter, Search, Download, TrendingUp, Package, Clock, CheckCircle } from 'lucide-react';
 import { getAdminOrders, exportOrders } from '../../api/index';
 import { StatusBadge, Spinner, EmptyState } from '../../components/ui/AdminUI';
+import { getCurrencySymbol } from '../../utils/currency';
 import toast from 'react-hot-toast';
 
 const STATUSES = ['all', 'pending', 'confirmed', 'processing', 'dispatched', 'delivered', 'cancelled'];
@@ -270,7 +271,8 @@ export default function Orders() {
                             {order.items?.length}
                           </span>
                         </td>
-                        <td className="px-5 py-4 font-bold text-gray-900 dark:text-white">₦{order.total?.toLocaleString()}</td>
+                        <td className="px-5 py-4 font-bold text-gray-900 
+dark:text-white">{getCurrencySymbol(order.currency || 'NGN')}{order.total?.toLocaleString()}</td>
                         <td className="px-5 py-4">
                           <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold capitalize ${
                             order.fulfillmentType === 'delivery' 

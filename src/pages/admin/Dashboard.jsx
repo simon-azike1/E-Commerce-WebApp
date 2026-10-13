@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { getAdminOrders, getAdminProducts } from '../../api/index';
 import { StatCard, StatusBadge, Spinner } from '../../components/ui/AdminUI';
+import { getCurrencySymbol } from '../../utils/currency';
 import toast from 'react-hot-toast';
 
 const fadeUp = (delay = 0) => ({
@@ -31,22 +32,40 @@ export default function Dashboard() {
   const load = async () => {
     setRefreshing(true);
     try {
-      const [ordersRes, pendingRes, productsRes] = await Promise.all([
-        getAdminOrders({ limit: 10 }),
-        getAdminOrders({ status: 'pending', limit: 1 }),
-        getAdminProducts(),
-      ]);
-      const orders = ordersRes.data;
-      const products = productsRes.data;
-      const totalRevenue = orders.orders
-        .filter((o) => o.status !== 'cancelled')
-        .reduce((sum, o) => sum + (o.total || 0), 0);
-      setStats({
-        totalOrders: orders.total,
-        pendingOrders: pendingRes.data.total,
-        totalProducts: products.count,
-        totalRevenue,
-      });
+       const [ordersRes, pendingRes, productsRes] = await Promise.all([
+         getAdminOrders({ limit: 10 }),
+         getAdminOrders({ status: 'pending', limit: 1 }),
+         getAdminProducts(),
+       ]);
+       const orders = ordersRes.data;
+       const products = productsRes.data;
+       
+       // Calculate total revenue and determine most common currency
+       const completedOrders = orders.orders.filter((o) => o.status !== 'cancelled');
+       const totalRevenue = completedOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+       
+       // Determine most common currency among orders
+       const currencyCounts = {};
+       completedOrders.forEach(order => {
+         const curr = order.currency || 'NGN';
+         currencyCounts[curr] = (currencyCounts[curr] || 0) + 1;
+       });
+       let mostCommonCurrency = 'NGN';
+       let maxCount = 0;
+       for (const [curr, count] of Object.entries(currencyCounts)) {
+         if (count > maxCount) {
+           maxCount = count;
+           mostCommonCurrency = curr;
+         }
+       }
+       
+       setStats({
+         totalOrders: orders.total,
+         pendingOrders: pendingRes.data.total,
+         totalProducts: products.count,
+         totalRevenue,
+         currency: mostCommonCurrency
+       });
       setRecentOrders(orders.orders);
       
       // Generate activities from recent orders
@@ -77,19 +96,19 @@ export default function Dashboard() {
     }
   };
   
-  // Helper function to get relative time
-  const getRelativeTime = (date) => {
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes} min ago`;
-    if (hours < 24) return `${hours} hr ago`;
-    return `${days} day${days > 1 ? 's' : ''} ago`;
-  };
+   // Helper function to get relative time
+   const getRelativeTime = (date) => {
+     const now = new Date();
+     const diff = now - date;
+     const minutes = Math.floor(diff / 60000);
+     const hours = Math.floor(diff / 3600000);
+     const days = Math.floor(diff / 86400000);
+     
+      if (minutes < 1) return 'Just now';
+      if (minutes < 60) return `${minutes} min ago`;
+      if (hours < 24) return `${hours} hr ago`;
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+    };
 
   useEffect(() => { load(); }, []);
 
@@ -339,7 +358,7 @@ export default function Dashboard() {
             },
             {
               label: 'Revenue',
-              value: `₦${(stats?.totalRevenue ?? 0).toLocaleString()}`,
+              value: `${getCurrencySymbol(stats?.currency || 'NGN')}${(stats?.totalRevenue ?? 0).toLocaleString()}`,
               icon: TrendingUp,
               color: 'from-green-500 to-emerald-500',
               bg: 'bg-green-50',
@@ -473,10 +492,12 @@ export default function Dashboard() {
                     <StatusBadge status={order.status} />
                   </div>
                   <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
-                      <p className="font-bold text-gray-900 dark:text-white">₦{order.total?.toLocaleString()}</p>
-                    </div>
+                     <div>
+                       <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
+                       <p className="font-bold text-gray-900 dark:text-white">
+                         {getCurrencySymbol(order.currency || 'NGN')}{order.total?.toLocaleString()}
+                       </p>
+                     </div>
                     <Link
                       to={`/admin/orders/${order._id}`}
                       className="text-blue-600 text-xs font-semibold hover:underline"

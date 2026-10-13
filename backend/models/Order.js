@@ -63,14 +63,20 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'DeliveryAgent',
     },
-    // Payment fields (Phase 3 — populated when PAYMENT_ENABLED)
-    paymentStatus: {
-      type: String,
-      enum: ['unpaid', 'paid', 'refunded'],
-      default: 'unpaid',
-    },
-    paymentRef: String,
-    paymentMethod: String,
+     // Payment fields (Phase 3 — populated when PAYMENT_ENABLED)
+     paymentStatus: {
+       type: String,
+       enum: ['unpaid', 'paid', 'refunded'],
+       default: 'unpaid',
+     },
+     paymentRef: String,
+     paymentMethod: String,
+     
+     currency: {
+       type: String,
+       default: 'NGN',
+       enum: ['NGN', 'MAD', 'USD', 'EUR', 'GBP']
+     },
 
     notes: String,  // admin/internal notes
     customerNote: String, // note from customer at checkout

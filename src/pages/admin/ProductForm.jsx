@@ -4,11 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Upload, X, Plus, Save, Image, Tag, DollarSign, Package, Eye, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
 import { createProduct, updateProduct, getAdminProducts, getCategories, deleteProductImage } from '../../api/index';
 import { Spinner } from '../../components/ui/AdminUI';
+import { getCurrencySymbol, CURRENCIES } from '../../utils/currency';
 import toast from 'react-hot-toast';
 
 const EMPTY = {
   name: '', description: '', price: '', comparePrice: '',
   category: '', stock: '', isFeatured: false, isActive: true, tags: '',
+  currency: 'NGN' // Default to Nigerian Naira
 };
 
 const fadeUp = (delay = 0) => ({
@@ -38,23 +40,23 @@ export default function ProductForm() {
     getCategories().then((r) => setCategories(r.data.categories));
   }, []);
 
-  useEffect(() => {
-    if (!isEdit) return;
-    getAdminProducts().then((r) => {
-      const product = r.data.products.find((p) => p._id === id);
-      if (!product) { toast.error('Product not found'); navigate('/admin/products'); return; }
-      setForm({
-        name: product.name || '', description: product.description || '',
-        price: product.price || '', comparePrice: product.comparePrice || '',
-        category: product.category?._id || '', stock: product.stock ?? '',
-        isFeatured: product.isFeatured || false, isActive: product.isActive ?? true,
-        tags: (product.tags || []).join(', '),
-      });
-      setImages((product.images || []).map((img) => ({ url: img.url, publicId: img.publicId, preview: img.url })));
-      setImageUrl(product.images?.[0]?.url || '');
-      setLoading(false);
-    });
-  }, [id, isEdit, navigate]);
+   useEffect(() => {
+     if (!isEdit) return;
+     getAdminProducts().then((r) => {
+       const product = r.data.products.find((p) => p._id === id);
+       if (!product) { toast.error('Product not found'); navigate('/admin/products'); return; }
+        setForm({
+          name: product.name || '', description: product.description || '',
+          price: product.price || '', comparePrice: product.comparePrice || '',
+          category: product.category?._id || '', stock: product.stock ?? '',
+          isFeatured: product.isFeatured || false, isActive: product.isActive ?? true,
+          currency: product.currency || 'NGN'
+        });
+       setImages((product.images || []).map((img) => ({ url: img.url, publicId: img.publicId, preview: img.url })));
+       setImageUrl(product.images?.[0]?.url || '');
+       setLoading(false);
+     });
+   }, [id, isEdit, navigate]);
 
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
@@ -95,32 +97,33 @@ export default function ProductForm() {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.name || !form.price || !form.category || !form.stock) {
-      toast.error('Name, price, category and stock are required');
-      return;
-    }
-    if (images.length === 0 && !imageUrl) {
-      toast.error('Please add at least one product image or image URL');
-      return;
-    }
-    setSaving(true);
-    try {
-      const formData = new FormData();
-      Object.entries(form).forEach(([k, v]) => {
-        if (k === 'tags') formData.append('tags', JSON.stringify(v.split(',').map((t) => t.trim()).filter(Boolean)));
-        else formData.append(k, v);
-      });
-      images.forEach((img) => { if (img.file) formData.append('images', img.file); });
-      if (imageUrl) formData.append('imageUrl', imageUrl);
-      if (isEdit) { await updateProduct(id, formData); toast.success('Product updated successfully'); }
-      else { await createProduct(formData); toast.success('Product created successfully'); }
-      navigate('/admin/products');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Something went wrong');
-    } finally { setSaving(false); }
-  };
+   const handleSubmit = async (e) => {
+     e.preventDefault();
+     if (!form.name || !form.price || !form.category || !form.stock) {
+       toast.error('Name, price, category and stock are required');
+       return;
+     }
+     if (images.length === 0 && !imageUrl) {
+       toast.error('Please add at least one product image or image URL');
+       return;
+     }
+     console.log('Form data:', form); // Debug line
+     setSaving(true);
+     try {
+       const formData = new FormData();
+       Object.entries(form).forEach(([k, v]) => {
+         if (k === 'tags') formData.append('tags', JSON.stringify(v.split(',').map((t) => t.trim()).filter(Boolean)));
+         else formData.append(k, v);
+       });
+       images.forEach((img) => { if (img.file) formData.append('images', img.file); });
+       if (imageUrl) formData.append('imageUrl', imageUrl);
+       if (isEdit) { await updateProduct(id, formData); toast.success('Product updated successfully'); }
+       else { await createProduct(formData); toast.success('Product created successfully'); }
+       navigate('/admin/products');
+     } catch (err) {
+       toast.error(err.response?.data?.message || 'Something went wrong');
+     } finally { setSaving(false); }
+   };
 
   const discount = form.comparePrice && Number(form.comparePrice) > Number(form.price)
     ? Math.round(((form.comparePrice - form.price) / form.comparePrice) * 100)
@@ -252,23 +255,49 @@ export default function ProductForm() {
                       <p className="text-xs text-gray-500">Set product price and discounts</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                      <label className="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
-                        <DollarSign size={14} />
-                        Price (₦) <span className="text-red-500">*</span>
-                      </label>
-                      <input type="number" required min="0" value={form.price} onChange={(e) => set('price', e.target.value)} placeholder="25000" className="w-full border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-4 py-3 text-sm outline-none transition-all duration-300" />
-                    </div>
-                    <div>
-                      <label className="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
-                        <DollarSign size={14} />
-                        Compare Price (₦)
-                      </label>
-                      <input type="number" min="0" value={form.comparePrice} onChange={(e) => set('comparePrice', e.target.value)} placeholder="35000" className="w-full border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-4 py-3 text-sm outline-none transition-all duration-300" />
-                      <p className="text-xs text-gray-400 mt-1.5">Original price for discount display</p>
-                    </div>
-                  </div>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                     <div>
+                       <label className="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                         <DollarSign size={14} />
+                         Price <span className="text-red-500">*</span>
+                       </label>
+                       <div className="flex items-center">
+                         <select
+                           value={form.currency}
+                           onChange={(e) => set('currency', e.target.value)}
+                           className="mr-3 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3 py-2 text-sm outline-none transition-all duration-300"
+                         >
+                           {CURRENCIES.map(curr => (
+                             <option key={curr.code} value={curr.code}>
+                               {curr.symbol} {curr.name}
+                             </option>
+                           ))}
+                         </select>
+                         <input type="number" required min="0" value={form.price} onChange={(e) => set('price', e.target.value)} placeholder="25000" className="flex-1 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-4 py-3 text-sm outline-none transition-all duration-300" />
+                       </div>
+                     </div>
+                     <div>
+                       <label className="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                         <DollarSign size={14} />
+                         Compare Price
+                       </label>
+                       <div className="flex items-center">
+                         <select
+                           value={form.currency}
+                           onChange={(e) => set('currency', e.target.value)}
+                           className="mr-3 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3 py-2 text-sm outline-none transition-all duration-300"
+                         >
+                           {CURRENCIES.map(curr => (
+                             <option key={curr.code} value={curr.code}>
+                               {curr.symbol} {curr.name}
+                             </option>
+                           ))}
+                         </select>
+                         <input type="number" min="0" value={form.comparePrice} onChange={(e) => set('comparePrice', e.target.value)} placeholder="35000" className="flex-1 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-4 py-3 text-sm outline-none transition-all duration-300" />
+                       </div>
+                       <p className="text-xs text-gray-400 mt-1.5">Original price for discount display</p>
+                     </div>
+                   </div>
                   <AnimatePresence>
                     {discount > 0 && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-5 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl">
@@ -452,10 +481,12 @@ export default function ProductForm() {
                     <span className="text-gray-500">Product Name</span>
                     <span className="font-medium text-gray-900 truncate max-w-[150px]">{form.name || '—'}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Price</span>
-                    <span className="font-medium text-gray-900">₦{form.price ? Number(form.price).toLocaleString() : '—'}</span>
-                  </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Price</span>
+                      <span className="font-medium text-gray-900">
+                        {getCurrencySymbol(form.currency)}{form.price ? Number(form.price).toLocaleString() : '—'}
+                      </span>
+                    </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Stock</span>
                     <span className="font-medium text-gray-900">{form.stock || '—'} units</span>

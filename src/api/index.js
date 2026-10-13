@@ -11,18 +11,22 @@ api.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });  
-// If 401, clear admin token and redirect to admin login
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401 && window.location.pathname.startsWith('/admin')) {
-      localStorage.removeItem('adminToken');
-      localStorage.removeItem('adminUser');
-      window.location.href = '/admin/login';
+  // If 401, clear admin token and redirect to admin login
+  api.interceptors.response.use(
+    (res) => res,
+    (err) => {
+      if (err.response?.status === 401 && window.location.pathname.startsWith('/admin')) {
+        // Only clear token if it's explicitly expired (not for other auth issues like permissions)
+        if (err.response?.data?.message === 'Token expired') {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          window.location.href = '/admin/login';
+        }
+        // For other 401s, let the error propagate so UI can handle it appropriately
+      }
+      return Promise.reject(err);
     }
-    return Promise.reject(err);
-  }
-);
+  );
 
 // ── Storefront ────────────────────────────────────────────────────────────────
 export const getProducts   = (params) => api.get('/products', { params });

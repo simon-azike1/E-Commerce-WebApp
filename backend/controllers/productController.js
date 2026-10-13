@@ -1,3 +1,4 @@
+console.error('Product controller loaded');
 const Product = require('../models/Product');
 const { cloudinary } = require('../config/cloudinary');
 const { asyncHandler } = require('../middleware/error');
@@ -48,12 +49,14 @@ const getAllProductsAdmin = asyncHandler(async (req, res) => {
 
 // @route   POST /api/products
 const createProduct = asyncHandler(async (req, res) => {
-  console.log('=== CREATE PRODUCT DEBUG ===');
-  console.log('Body keys:', Object.keys(req.body));
-  console.log('Files:', req.files ? req.files.map(f => ({fieldname: f.fieldname, originalname: f.originalname, path: f.path, filename: f.filename })) : 'No files');
-  console.log('imageUrl from body:', req.body.imageUrl);
+  console.error('=== CREATE PRODUCT DEBUG ===');
+  console.error('Body keys:', Object.keys(req.body));
+  console.error('Body:', req.body);
+  console.error('Files:', req.files ? req.files.map(f => ({fieldname: f.fieldname, originalname: f.originalname, path: f.path, filename: f.filename })) : 'No files');
+  console.error('imageUrl from body:', req.body.imageUrl);
   
-  const { name, description, price, comparePrice, category, stock, isFeatured, tags, imageUrl } = req.body;
+  const { name, description, price, comparePrice, category, stock, isFeatured, tags, imageUrl, currency } = req.body;
+  console.error('Received currency:', currency);
 
   let images = [];
   if (req.files && req.files.length > 0) {
@@ -67,17 +70,18 @@ const createProduct = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'At least one image or image URL is required' });
   }
 
-  const product = await Product.create({
-    name,
-    description,
-    price,
-    comparePrice,
-    category,
-    stock,
-    isFeatured,
-    tags: tags ? JSON.parse(tags) : [],
-    images,
-  });
+   const product = await Product.create({
+     name,
+     description,
+     price,
+     comparePrice,
+     category,
+     stock,
+     isFeatured,
+     tags: tags ? JSON.parse(tags) : [],
+     images,
+     currency: currency || 'NGN' // Default to NGN if not provided
+   });
 
   console.log('Product created:', product._id);
   console.log('=== END DEBUG ===');
@@ -85,37 +89,39 @@ const createProduct = asyncHandler(async (req, res) => {
   res.status(201).json({ success: true, product });
 });
 
-// @route   PUT /api/products/:id
-const updateProduct = asyncHandler(async (req, res) => {
-  console.log('=== UPDATE PRODUCT DEBUG ===');
-  console.log('Files:', req.files ? req.files.length : 'No files');
-  console.log('imageUrl:', req.body.imageUrl);
-  
-  const product = await Product.findById(req.params.id);
-  if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-
-  const updates = { ...req.body };
-  if (updates.tags && typeof updates.tags === 'string') {
-    updates.tags = JSON.parse(updates.tags);
-  }
-
-  if (req.files && req.files.length > 0) {
-    const newImages = req.files.map((f) => ({ url: f.path, publicId: f.filename }));
-    updates.images = [...product.images, ...newImages];
-  } else if (req.body.imageUrl && !req.files) {
-    // Replace first image with URL if no files uploaded
-    product.images[0] = { url: req.body.imageUrl };
-    updates.images = product.images;
-  }
-
-  const updated = await Product.findByIdAndUpdate(req.params.id, updates, {
-    new: true,
-    runValidators: true,
-  });
-
-  res.json({ success: true, product: updated });
-  console.log('=== END DEBUG ===');
-});
+ // @route   PUT /api/products/:id
+ const updateProduct = asyncHandler(async (req, res) => {
+   console.log('=== UPDATE PRODUCT DEBUG ===');
+   console.log('Files:', req.files ? req.files.length : 'No files');
+   console.log('imageUrl:', req.body.imageUrl);
+   console.log('Body keys:', Object.keys(req.body));
+   console.log('Body:', req.body);
+   
+   const product = await Product.findById(req.params.id);
+   if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+   
+   const updates = { ...req.body };
+   if (updates.tags && typeof updates.tags === 'string') {
+     updates.tags = JSON.parse(updates.tags);
+   }
+   
+   if (req.files && req.files.length > 0) {
+     const newImages = req.files.map((f) => ({ url: f.path, publicId: f.filename }));
+     updates.images = [...product.images, ...newImages];
+   } else if (req.body.imageUrl && !req.files) {
+     // Replace first image with URL if no files uploaded
+     product.images[0] = { url: req.body.imageUrl };
+     updates.images = product.images;
+   }
+   
+   const updated = await Product.findByIdAndUpdate(req.params.id, updates, {
+     new: true,
+     runValidators: true,
+   });
+   
+   res.json({ success: true, product: updated });
+   console.log('=== END DEBUG ===');
+ });
 
 // @route   DELETE /api/products/:id
 const deleteProduct = asyncHandler(async (req, res) => {

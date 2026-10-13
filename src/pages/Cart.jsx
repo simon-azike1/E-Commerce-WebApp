@@ -1,13 +1,19 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Package, ArrowLeft } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Package, ArrowLeft, ZoomIn } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
+import { getCurrencySymbol, getDominantCurrency } from '../utils/currency';
+import ImageLightbox from '../components/ui/ImageLightbox';
 import toast from 'react-hot-toast';
 
 const PLACEHOLDER = 'https://placehold.co/400x400/F0EBE1/AEA9A3?text=Product';
 
 export default function Cart() {
   const { cart, removeFromCart, updateQty, totalPrice, clearCart } = useCart();
+  const [lightbox, setLightbox] = useState(null);
+
+  const cartCurrency = getDominantCurrency(cart);
 
   const handleRemove = (item) => {
     removeFromCart(item._id);
@@ -136,19 +142,25 @@ export default function Cart() {
                   layout
                   className="group flex gap-4 md:gap-6 bg-white border border-cream-dark rounded-2xl p-4 md:p-5 items-center hover:shadow-lg hover:border-terra/30 transition-all duration-300"
                 >
-                  {/* Image */}
-                  <Link
-                    to={`/product/${item._id}`}
-                    className="flex-shrink-0 overflow-hidden rounded-xl"
+                  {/* Image — click to view full image */}
+                  <button
+                    type="button"
+                    onClick={() => setLightbox({ images: item.images?.length ? item.images.map((i) => i.url) : [PLACEHOLDER], index: 0 })}
+                    className="group/img relative flex-shrink-0 overflow-hidden rounded-xl"
+                    aria-label={`View ${item.name} image`}
                   >
                     <motion.img
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.3 }}
                       src={item.images?.[0]?.url || PLACEHOLDER}
                       alt={item.name}
-                      className="w-20 h-20 md:w-24 md:h-24 rounded-xl object-cover bg-cream-dark"
+                      className="w-24 h-24 md:w-28 md:h-28 rounded-xl object-cover bg-cream-dark"
                     />
-                  </Link>
+                    <span className="absolute inset-0 bg-charcoal/0 group-hover/img:bg-charcoal/10 transition-colors pointer-events-none" />
+                    <span className="absolute bottom-1.5 right-1.5 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm text-charcoal flex items-center justify-center shadow pointer-events-none">
+                      <ZoomIn size={13} />
+                    </span>
+                  </button>
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
@@ -161,7 +173,7 @@ export default function Cart() {
                       </motion.h3>
                     </Link>
                     <p className="text-sm md:text-base font-bold text-terra mt-1">
-                      ₦{item.price.toLocaleString()}
+                      {getCurrencySymbol(item.currency || 'NGN')}{item.price.toLocaleString()}
                     </p>
                   </div>
 
@@ -194,7 +206,7 @@ export default function Cart() {
                   <div className="text-right flex-shrink-0 min-w-[80px]">
                     <p className="text-xs text-stone mb-1">Total</p>
                     <p className="text-sm md:text-base font-bold text-charcoal">
-                      ₦{(item.price * item.quantity).toLocaleString()}
+                      {getCurrencySymbol(item.currency || 'NGN')}{(item.price * item.quantity).toLocaleString()}
                     </p>
                   </div>
 
@@ -233,7 +245,7 @@ export default function Cart() {
               <div className="flex justify-between items-center py-2 border-b border-cream-dark/50">
                 <span className="text-stone">Subtotal</span>
                 <span className="font-semibold text-charcoal">
-                  ₦{totalPrice.toLocaleString()}
+                  {getCurrencySymbol(cartCurrency)}{totalPrice.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-cream-dark/50">
@@ -245,7 +257,7 @@ export default function Cart() {
               <div className="flex justify-between items-center py-2">
                 <span className="text-stone">Discount</span>
                 <span className="text-terra font-medium">
-                  -₦0
+                  -{getCurrencySymbol(cartCurrency)}0
                 </span>
               </div>
             </div>
@@ -254,7 +266,7 @@ export default function Cart() {
               <div className="flex justify-between items-center">
                 <span className="text-charcoal font-semibold">Total</span>
                 <span className="text-xl font-bold text-terra">
-                  ₦{totalPrice.toLocaleString()}
+                  {getCurrencySymbol(cartCurrency)}{totalPrice.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -306,6 +318,15 @@ export default function Cart() {
           </motion.div>
         </div>
       </div>
+
+      {/* Full-screen image viewer */}
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          index={lightbox.index}
+          onClose={() => setLightbox(null)}
+        />
+      )}
     </div>
   );
 }

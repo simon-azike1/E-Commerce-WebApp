@@ -1,6 +1,7 @@
 import { useLocation, Link, Navigate } from 'react-router-dom';
 import { CheckCircle, MessageCircle, ShoppingBag, ArrowRight, Package, Truck, Store } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getCurrencySymbol } from '../utils/currency';
 
 export default function OrderConfirmationPage() {
   const { state } = useLocation();
@@ -8,7 +9,7 @@ export default function OrderConfirmationPage() {
   // Guard: if someone navigates here directly with no state, redirect to shop
   if (!state?.orderNumber) return <Navigate to="/shop" replace />;
 
-  const { orderNumber, total, waLink, fulfillmentType } = state;
+  const { orderNumber, total, currency, waLink, fulfillmentType } = state;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -92,7 +93,7 @@ export default function OrderConfirmationPage() {
           <p className="text-stone text-lg mt-4">
             Total:{' '}
             <span className="font-bold text-terra text-xl">
-              ₦{total?.toLocaleString()}
+              {getCurrencySymbol(currency || 'NGN')}{total?.toLocaleString()}
             </span>
           </p>
         </motion.div>

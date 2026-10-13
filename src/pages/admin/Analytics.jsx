@@ -4,6 +4,7 @@ import { BarChart3, TrendingUp, ShoppingBag, Package, Users, DollarSign, Calenda
 import { getAdminOrders, getAdminProducts } from '../../api/index';
 import { StatCard, Spinner } from '../../components/ui/AdminUI';
 import { useTheme } from '../../context/ThemeContext';
+import { getCurrencySymbol } from '../../utils/currency';
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -31,47 +32,63 @@ export default function Analytics() {
   const [loading, setLoading] = useState(true);
   const [timeFilter, setTimeFilter] = useState('30d');
 
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const [ordersRes, productsRes] = await Promise.all([
-        getAdminOrders({ limit: 100 }), // Get recent for charts
-        getAdminProducts(),
-      ]);
+   const loadData = async () => {
+     setLoading(true);
+     try {
+       const [ordersRes, productsRes] = await Promise.all([
+         getAdminOrders({ limit: 100 }), // Get recent for charts
+         getAdminProducts(),
+       ]);
 
-      // Stats
-      const orders = ordersRes.data.orders;
-      const revenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-      const uniqueCustomers = [...new Set(orders.map(o => o.customer?.phone))].length;
+       // Stats
+       const orders = ordersRes.data.orders;
+       const revenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+       const uniqueCustomers = [...new Set(orders.map(o => o.customer?.phone))].length;
+       
+       // Determine most common currency among orders
+       const currencyCounts = {};
+       orders.forEach(order => {
+         const curr = order.currency || 'NGN';
+         currencyCounts[curr] = (currencyCounts[curr] || 0) + 1;
+       });
+       let mostCommonCurrency = 'NGN';
+       let maxCount = 0;
+       for (const [curr, count] of Object.entries(currencyCounts)) {
+         if (count > maxCount) {
+           maxCount = count;
+           mostCommonCurrency = curr;
+         }
+       }
 
-      setStats({
-        totalOrders: ordersRes.data.total,
-        totalRevenue: revenue,
-        totalCustomers: uniqueCustomers,
-        totalProducts: productsRes.data.count,
-      });
+       setStats({
+         totalOrders: ordersRes.data.total,
+         totalRevenue: revenue,
+         totalCustomers: uniqueCustomers,
+         totalProducts: productsRes.data.count,
+         currency: mostCommonCurrency
+       });
 
-      // Chart data - Orders by status
-      const statusCounts = orders.reduce((acc, order) => {
-        acc[order.status] = (acc[order.status] || 0) + 1;
-        return acc;
-      }, {});
-      setOrdersData(Object.entries(statusCounts).map(([status, count]) => ({ status, count })));
+       // Chart data - Orders by status
+       const statusCounts = orders.reduce((acc, order) => {
+         acc[order.status] = (acc[order.status] || 0) + 1;
+         return acc;
+       }, {});
+       setOrdersData(Object.entries(statusCounts).map(([status, count]) => ({ status, count })));
 
-      // Revenue trend (mock + real recent data)
-      const trendData = orders.slice(0, 7).reverse().map((order, i) => ({
-        date: `Day ${7-i}`,
-        revenue: order.total || 0,
-        orders: 1
-      }));
-      setProductsData(trendData);
-
-    } catch (error) {
-      console.error('Analytics load error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+       // Revenue trend (mock + real recent data)
+       const trendData = orders.slice(0, 7).reverse().map((order, i) => ({
+         date: `Day ${7-i}`,
+         revenue: order.total || 0,
+         orders: 1
+       }));
+       setProductsData(trendData);
+     } catch (error) {
+       console.error('Analytics load error:', error);
+       toast.error('Failed to load analytics data');
+     } finally {
+       setLoading(false);
+     }
+   };
 
   useEffect(() => {
     loadData();
@@ -125,7 +142,8 @@ export default function Analytics() {
         >
           {[
             { value: stats?.totalOrders?.toLocaleString() || '0', label: 'Total Orders', icon: ShoppingBag, color: 'from-blue-500 to-cyan-600', trend: '+18%', trendColor: 'green' },
-            { value: `₦${stats?.totalRevenue?.toLocaleString() || '0'}`, label: 'Total Revenue', icon: TrendingUp, color: 'from-emerald-500 to-teal-600', trend: '+23%', trendColor: 'green' },
+            { value: `${getCurrencySymbol(stats?.currency || 'NGN')}${stats?.totalRevenue?.toLocaleString() || '0'}`, label: 
+'Total Revenue', icon: TrendingUp, color: 'from-emerald-500 to-teal-600', trend: '+23%', trendColor: 'green' },
             { value: stats?.totalCustomers?.toLocaleString() || '0', label: 'Customers', icon: Users, color: 'from-purple-500 to-pink-600', trend: '+12%', trendColor: 'blue' },
             { value: stats?.totalProducts?.toLocaleString() || '0', label: 'Products', icon: Package, color: 'from-orange-500 to-red-600', trend: '+5%', trendColor: 'orange' },
           ].map((stat, index) => (
@@ -213,7 +231,9 @@ export default function Analytics() {
               <DollarSign className="w-10 h-10 p-2 bg-emerald-500/20 text-emerald-600 rounded-xl" />
               <div>
                 <p className="text-sm text-gray-600">Average Order Value</p>
-                <p className="text-2xl font-bold text-gray-900">₦{(stats?.totalRevenue / (stats?.totalOrders || 1)).toFixed(0) || '0'}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {getCurrencySymbol(stats?.currency || 'NGN')}${(stats?.totalRevenue / (stats?.totalOrders || 1)).toFixed(0) || '0'}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-4 p-4 bg-white/50 rounded-2xl border border-white/50">
