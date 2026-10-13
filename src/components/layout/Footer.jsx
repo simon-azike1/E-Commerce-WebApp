@@ -1,17 +1,20 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Facebook, Instagram, Twitter, Mail, MapPin, Phone } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Twitter, Mail, MapPin, Phone } from 'lucide-react';
+import Logo from '../ui/Logo';
 
 export default function Footer() {
   const socialLinks = [
-    { icon: Facebook, href: 'https://facebook.com', label: 'Facebook' },
-    { icon: Instagram, href: 'https://instagram.com', label: 'Instagram' },
-    { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
+    { icon: Facebook,  href: 'https://web.facebook.com/simon.azike/',        label: 'Facebook' },
+    { icon: Instagram, href: 'https://www.instagram.com/azikeshinye/',       label: 'Instagram' },
+    { icon: Linkedin,  href: 'https://www.linkedin.com/in/simonzik/',        label: 'LinkedIn' },
+    { icon: Twitter,   href: 'https://x.com/SimonAzike75984',                label: 'X' },
   ];
 
   const quickLinks = [
     ['/', 'Home'],
     ['/shop', 'Shop'],
+    ['/gallery', 'Gallery'],
     ['/services', 'Services'],
     ['/about', 'About'],
     ['/contact', 'Contact'],
@@ -19,9 +22,9 @@ export default function Footer() {
   ];
 
   const contactInfo = [
-    { icon: Mail, text: 'hello@shopflow.com' },
-    { icon: Phone, text: '+1 (555) 123-4567' },
-    { icon: MapPin, text: '123 Commerce St, NY 10001' },
+    { icon: Mail, text: 'azikeshinye@gmail.com' },
+    { icon: Phone, text: '+212 751-780853' },
+    { icon: MapPin, text: 'Morocco' },
   ];
 
   const containerVariants = {
@@ -56,21 +59,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <motion.div variants={itemVariants} className="lg:col-span-1">
-            <Link to="/" className="inline-block">
-              <div className="font-display text-xl font-bold text-white flex items-center gap-2 group">
-                <motion.span
-                  className="text-terra"
-                  whileHover={{ scale: 1.2, rotate: 180 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  ●
-                </motion.span>
-                <motion.span
-                  className="group-hover:text-terra transition-colors duration-300"
-                  whileHover={{ x: 3 }}
-                >
-                  ShopFlow
-                </motion.span>
+            <Link to="/" className="inline-block group">
+              <div className="bg-cream rounded-xl p-2 inline-block group-hover:scale-105 transition-transform duration-300">
+                <Logo className="h-9" />
               </div>
             </Link>
             <motion.p
@@ -182,7 +173,7 @@ export default function Footer() {
           transition={{ delay: 0.5 }}
         >
           <p className="text-xs text-stone-light">
-            © {new Date().getFullYear()} ShopFlow. All rights reserved.
+            © {new Date().getFullYear()} flow. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs">
             {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (

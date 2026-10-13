@@ -13,6 +13,7 @@ import ScrollToTop from './components/layout/ScrollToTop';
 // ── Storefront pages ──────────────────────────────────────────────────────────
 import Home              from './pages/Home';
 import Shop              from './pages/Shop';
+import Gallery           from './pages/Gallery';
 import About             from './pages/About';
 import Contact           from './pages/Contact';
 import Services          from './pages/Services';
@@ -68,6 +69,7 @@ function StorefrontLayout() {
           <Routes location={location} key={location.pathname}>
             <Route path="/"                   element={<PageWrapper><Home /></PageWrapper>} />
             <Route path="/shop"               element={<PageWrapper><Shop /></PageWrapper>} />
+            <Route path="/gallery"            element={<PageWrapper><Gallery /></PageWrapper>} />
             <Route path="/about"              element={<PageWrapper><About /></PageWrapper>} />
             <Route path="/contact"            element={<PageWrapper><Contact /></PageWrapper>} />
             <Route path="/services"           element={<PageWrapper><Services /></PageWrapper>} />

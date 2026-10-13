@@ -31,7 +31,7 @@ export default function About() {
     {
       name: 'Adewale O.',
       role: 'Lagos',
-      text: 'ShopFlow has completely changed how I shop online. The personal touch and quick responses on WhatsApp make all the difference. Highly recommended!',
+      text: 'flow has completely changed how I shop online. The personal touch and quick responses on WhatsApp make all the difference. Highly recommended!',
       rating: 5,
     },
     {
@@ -108,7 +108,7 @@ export default function About() {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="text-stone text-lg md:text-xl leading-relaxed"
             >
-              ShopFlow started with a simple idea — make it easy for anyone to find great
+              flow started with a simple idea — make it easy for anyone to find great
               products and have them delivered with care. No complicated checkouts,
               no hidden fees. Just great products and honest service.
             </motion.p>
@@ -356,7 +356,7 @@ export default function About() {
               What our customers say
             </h2>
             <p className="text-stone text-sm mt-3 max-w-lg mx-auto">
-              Don't just take our word for it. Here's what our customers have to say about their experience with ShopFlow.
+              Don't just take our word for it. Here's what our customers have to say about their experience with flow.
             </p>
           </motion.div>
 

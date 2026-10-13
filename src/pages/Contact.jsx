@@ -1,6 +1,13 @@
 import { useState } from 'react';
-import { MessageCircle, Phone, Mail, MapPin, Send, Clock, User } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Send, Clock, User, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+const socialLinks = [
+  { icon: Facebook,  href: 'https://web.facebook.com/simon.azike/',  label: 'Facebook' },
+  { icon: Instagram, href: 'https://www.instagram.com/azikeshinye/', label: 'Instagram' },
+  { icon: Linkedin,  href: 'https://www.linkedin.com/in/simonzik/',  label: 'LinkedIn' },
+  { icon: Twitter,   href: 'https://x.com/SimonAzike75984',          label: 'X' },
+];
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
@@ -36,7 +43,7 @@ export default function Contact() {
     {
       Icon: Phone,
       label: 'Phone',
-      value: '+234 801 234 5678',
+      value: '+212 751-780853',
       sub: 'Mon – Sat, 8am – 6pm',
       color: 'from-terra to-orange-600',
       bg: 'bg-orange-50',
@@ -45,7 +52,7 @@ export default function Contact() {
     {
       Icon: Mail,
       label: 'Email',
-      value: 'hello@shopflow.com',
+      value: 'azikeshinye@gmail.com',
       sub: 'We reply within 24 hours',
       color: 'from-blue-500 to-indigo-600',
       bg: 'bg-blue-50',
@@ -54,7 +61,7 @@ export default function Contact() {
     {
       Icon: MapPin,
       label: 'Location',
-      value: 'Lagos, Nigeria',
+      value: 'Morocco',
       sub: 'Pickup available by appointment',
       color: 'from-purple-500 to-pink-600',
       bg: 'bg-purple-50',
@@ -156,6 +163,29 @@ export default function Contact() {
                 </div>
               </motion.div>
             ))}
+
+            {/* Social Links */}
+            <motion.div variants={itemVariants} className="mt-2">
+              <p className="text-xs font-bold uppercase tracking-widest text-stone mb-3">
+                Follow us
+              </p>
+              <div className="flex gap-3">
+                {socialLinks.map(({ icon: Icon, href, label }) => (
+                  <motion.a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-11 h-11 rounded-xl bg-white/80 backdrop-blur-sm border border-cream-dark text-stone hover:text-white hover:bg-terra hover:border-terra flex items-center justify-center transition-colors duration-300"
+                  >
+                    <Icon size={18} />
+                  </motion.a>
+                ))}
+              </div>
+            </motion.div>
 
             {/* Additional Info Card */}
             <motion.div

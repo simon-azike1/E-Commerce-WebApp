@@ -310,7 +310,7 @@ export default function Services() {
               Why Choose Us
             </span>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-charcoal">
-              The ShopFlow difference
+              The flow difference
             </h2>
           </motion.div>
 

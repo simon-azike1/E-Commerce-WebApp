@@ -98,6 +98,32 @@ export default function OrderConfirmationPage() {
           </p>
         </motion.div>
 
+        {/* WhatsApp CTA Button — primary action, top of page */}
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="mb-4"
+        >
+          <a
+            href={waLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-3 bg-gradient-to-r from-[#25D366] to-[#1ebe5d] hover:from-[#1ebe5d] hover:to-[#17a851] text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg shadow-green-500/25 w-full"
+          >
+            <MessageCircle size={20} />
+            Open WhatsApp to Confirm Order
+            <ArrowRight size={18} />
+          </a>
+        </motion.div>
+
+        <motion.p
+          variants={itemVariants}
+          className="text-xs text-stone text-center mb-8"
+        >
+          WhatsApp will open in a new tab. If it doesn't open, copy the link and paste it in WhatsApp.
+        </motion.p>
+
         {/* Order Type Badge */}
         <motion.div
           variants={itemVariants}
@@ -130,7 +156,7 @@ export default function OrderConfirmationPage() {
             <div>
               <h3 className="text-green-800 font-semibold mb-2">What happens next?</h3>
               <p className="text-sm text-green-700 leading-relaxed">
-                Tap the button below to open WhatsApp — your order details will be pre-filled 
+                Tap the button above to open WhatsApp — your order details will be pre-filled 
                 and sent directly to the seller. They will confirm your order, discuss{' '}
                 <span className="font-semibold">
                   {fulfillmentType === 'delivery' ? 'delivery' : 'pickup'}
@@ -176,31 +202,6 @@ export default function OrderConfirmationPage() {
           </div>
         </motion.div>
 
-        {/* WhatsApp CTA Button */}
-        <motion.div
-          variants={itemVariants}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <a
-            href={waLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-3 bg-gradient-to-r from-[#25D366] to-[#1ebe5d] hover:from-[#1ebe5d] hover:to-[#17a851] text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg shadow-green-500/25 w-full mb-4"
-          >
-            <MessageCircle size={20} />
-            Open WhatsApp to Confirm Order
-            <ArrowRight size={18} />
-          </a>
-        </motion.div>
-
-        <motion.p
-          variants={itemVariants}
-          className="text-xs text-stone text-center mb-8"
-        >
-          WhatsApp will open in a new tab. If it doesn't open, copy the link and paste it in WhatsApp.
-        </motion.p>
-
         {/* Secondary Actions */}
         <motion.div
           variants={itemVariants}
@@ -229,8 +230,8 @@ export default function OrderConfirmationPage() {
         >
           <p className="text-xs text-stone">
             Need assistance? Contact us at{' '}
-            <a href="mailto:hello@shopflow.com" className="text-terra hover:underline">
-              hello@shopflow.com
+            <a href="mailto:azikeshinye@gmail.com" className="text-terra hover:underline">
+              azikeshinye@gmail.com
             </a>
           </p>
         </motion.div>

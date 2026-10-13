@@ -12,11 +12,17 @@ const categories = [
   { name: 'Health & Beauty', slug: 'health-beauty', description: 'Health, beauty and personal care', isActive: true },
 ];
 
-// Admin user data
+// Admin user data — password comes from env, never hardcoded
+const adminPassword = process.env.SEED_ADMIN_PASSWORD;
+if (!adminPassword) {
+  console.error('SEED_ADMIN_PASSWORD is not set. Add it to backend/.env before running the seed.');
+  process.exit(1);
+}
+
 const adminUser = {
   name: 'Admin User',
   email: 'admin@ecommerce.com',
-  password: 'Admin@123', // Will be hashed by pre-save hook
+  password: adminPassword, // Will be hashed by pre-save hook
   role: 'admin',
   phone: '+1234567890',
   address: {

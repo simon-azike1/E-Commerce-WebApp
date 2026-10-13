@@ -121,7 +121,7 @@ export default function Login() {
                   required
                   value={form.email}
                   onChange={(e) => set('email', e.target.value)}
-                  placeholder="admin@shopflow.com"
+                   placeholder="admin@ecommerce.com"
                   className="w-full border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-xl pl-12 pr-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all duration-300 bg-white"
                 />
               </div>
@@ -242,7 +242,7 @@ export default function Login() {
           variants={itemVariants}
           className="text-center text-xs text-gray-500 mt-8"
         >
-          ShopFlow Admin Panel © {new Date().getFullYear()} • All rights reserved
+          flow Admin Panel © {new Date().getFullYear()} • All rights reserved
         </motion.p>
       </motion.div>
     </div>

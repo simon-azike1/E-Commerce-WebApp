@@ -1,4 +1,4 @@
-# ShopFlow - E-commerce Platform
+# flow - E-commerce Platform
 
 A full-stack e-commerce application built with React, Express, and MongoDB.
 

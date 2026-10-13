@@ -273,7 +273,7 @@ export default function HomePage() {
                 </h2>
             </div>
             <Link
-              to="/shop"
+              to="/gallery"
               className="flex items-center gap-2 text-sm font-medium text-stone hover:text-terra transition-colors group"
             >
               View all products
@@ -471,7 +471,7 @@ export default function HomePage() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-white/90 text-lg mb-8 leading-relaxed"
         >
-          Join thousands of satisfied customers who trust ShopFlow for quality products 
+          Join thousands of satisfied customers who trust flow for quality products 
           and exceptional service. Your perfect find is just a click away.
         </motion.p>
 
@@ -590,7 +590,7 @@ export default function HomePage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-stone">Total</p>
-                <p className="text-lg font-bold text-terra">₦24,500</p>
+                <p className="text-lg font-bold text-terra">DH24,500</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
                 <CheckCircle size={20} className="text-white" />

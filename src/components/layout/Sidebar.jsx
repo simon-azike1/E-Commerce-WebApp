@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import Logo from '../ui/Logo';
 
 const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', color: 'from-blue-500 to-cyan-500', activeColor: 'bg-blue-500' },
@@ -117,16 +118,13 @@ export default function Sidebar() {
           transition={{ duration: 0.4 }}
           className={`flex items-center gap-3 px-4 mb-8 ${collapsed ? 'justify-center' : ''}`}
         >
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#C4602A] to-[#E8845A] flex items-center justify-center shadow-lg shadow-terra/30 flex-shrink-0">
-            <span className="text-white font-bold text-xl">S</span>
-          </div>
+          <Logo className={`${collapsed ? 'h-8' : 'h-10'} w-auto flex-shrink-0`} />
           {!collapsed && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="overflow-hidden"
             >
-              <span className="font-bold text-gray-900 dark:text-white text-xl block whitespace-nowrap font-display">ShopFlow</span>
               <span className="text-xs text-[#C4602A] dark:text-[#E8845A] font-medium whitespace-nowrap">
                 Admin Dashboard
               </span>
@@ -198,7 +196,7 @@ export default function Sidebar() {
                   {user?.name || 'Admin User'}
                 </p>
                 <p className="text-xs text-gray-500 truncate">
-                  {user?.email || 'admin@shopflow.com'}
+                  {user?.email || 'admin@ecommerce.com'}
                 </p>
               </div>
             )}
@@ -271,11 +269,8 @@ export default function Sidebar() {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <span className="text-white font-bold">●</span>
-            </div>
+            <Logo className="h-8 w-auto flex-shrink-0" />
             <div>
-              <span className="font-bold text-gray-900 text-sm block">ShopFlow</span>
               <span className="text-[10px] text-gray-500">Admin Panel</span>
             </div>
           </div>
@@ -359,11 +354,8 @@ export default function Sidebar() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                      <span className="text-white font-bold">●</span>
-                    </div>
+                    <Logo className="h-9 w-auto flex-shrink-0" />
                     <div>
-                      <span className="font-bold text-gray-900 dark:text-white block">ShopFlow</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">Admin Panel</span>
                     </div>
                   </div>
@@ -430,7 +422,7 @@ export default function Sidebar() {
                         {user?.name || 'Admin User'}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
-                        {user?.email || 'admin@shopflow.com'}
+                        {user?.email || 'admin@ecommerce.com'}
                       </p>
                     </div>
                   </div>

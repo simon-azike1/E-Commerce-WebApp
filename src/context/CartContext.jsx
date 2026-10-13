@@ -29,7 +29,7 @@ function cartReducer(state, action) {
 export function CartProvider({ children }) {
   const [cart, dispatch] = useReducer(cartReducer, [], () => {
     try {
-      const saved = localStorage.getItem('shopflow_cart');
+      const saved = localStorage.getItem('flow_cart');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -37,7 +37,7 @@ export function CartProvider({ children }) {
   });
 
   useEffect(() => {
-    localStorage.setItem('shopflow_cart', JSON.stringify(cart));
+    localStorage.setItem('flow_cart', JSON.stringify(cart));
   }, [cart]);
 
   const addToCart      = (product) => dispatch({ type: 'ADD', product });

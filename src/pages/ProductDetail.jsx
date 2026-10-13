@@ -131,7 +131,7 @@ export default function ProductDetailPage() {
   const savePct = hasDiscount ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100) : 0;
 
   const features = [
-    { icon: Truck, label: 'Free Delivery', sub: 'On orders over ₦50,000' },
+    { icon: Truck, label: 'Free Delivery', sub: 'Calculated at checkout' },
     { icon: Shield, label: 'Secure Payment', sub: '100% secure transactions' },
     { icon: RotateCcw, label: 'Easy Returns', sub: '30-day return policy' },
   ];

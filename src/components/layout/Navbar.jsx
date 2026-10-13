@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Menu, X } from 'lucide-react';
+import { ShoppingBag, Menu, X, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { useCart } from '../../context/CartContext';
-import { Moon, Sun } from 'lucide-react';
+import Logo from '../ui/Logo';
 
 const navLinks = [
   ['/',         'Home'],
   ['/shop',     'Shop'],
+  ['/gallery',  'Gallery'],
   ['/services', 'Services'],
   ['/about',    'About'],
   ['/contact',  'Contact'],
@@ -42,25 +43,15 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2 font-display text-2xl font-bold text-charcoal dark:text-cream flex-shrink-0 group"
+          className="flex items-center flex-shrink-0 group"
         >
-          <motion.span
-            className="text-terra text-sm"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            ●
-          </motion.span>
-          <motion.span
-            className="group-hover:text-terra transition-colors duration-300"
-            whileHover={{ x: 2 }}
-          >
-            ShopFlow
-          </motion.span>
+          <span className="rounded-xl bg-white/85 dark:bg-white/90 backdrop-blur-sm ring-1 ring-cream-dark/70 dark:ring-white/20 shadow-sm p-1 group-hover:shadow-md group-hover:ring-terra/50 transition-all duration-300">
+            <Logo className="h-8 md:h-9 group-hover:scale-105 transition-transform duration-300" />
+          </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex gap-6 ml-auto">
+        <nav className="hidden lg:flex gap-5 ml-auto">
           {navLinks.map(([to, label], index) => (
             <motion.div
               key={to}
@@ -152,7 +143,7 @@ export default function Navbar() {
           {/* Mobile menu toggle */}
           <motion.button
             whileTap={{ scale: 0.9 }}
-            className="md:hidden flex items-center justify-center text-charcoal hover:text-terra transition-colors duration-300"
+            className="lg:hidden flex items-center justify-center text-charcoal hover:text-terra transition-colors duration-300"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -191,7 +182,7 @@ export default function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="md:hidden bg-cream dark:bg-gray-900 border-t border-cream-dark dark:border-stone-700 overflow-hidden"
+            className="lg:hidden bg-cream dark:bg-gray-900 border-t border-cream-dark dark:border-stone-700 overflow-hidden"
           >
             <motion.div
               className="px-6 py-4 flex flex-col gap-4"
